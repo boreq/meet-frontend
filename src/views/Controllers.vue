@@ -1,6 +1,8 @@
 <template>
     <div class="controllers">
-        <content-header text="Controllers"></content-header>
+        <content-header text="Controllers">
+            <app-button text="Add controller"></app-button>
+        </content-header>
 
         <boxes>
             <boxes-row>

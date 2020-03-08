@@ -6,6 +6,7 @@ import Boxes from '@/components/Boxes.vue';
 import BoxesRow from '@/components/BoxesRow.vue';
 import Box from '@/components/Box.vue';
 import Devices from '@/components/Devices.vue';
+import AppButton from '@/components/AppButton.vue';
 import Notifications from '@/components/Notifications';
 
 
@@ -16,6 +17,7 @@ import Notifications from '@/components/Notifications';
         BoxesRow,
         Box,
         Devices,
+        AppButton,
     },
 })
 export default class Controllers extends Vue {

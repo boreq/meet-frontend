@@ -1,6 +1,21 @@
 .content-header {
-  background-color: $foreground-color;
-  padding: 1em;
-  font-size: 20px;
-  border-bottom: $border;
+    background-color: $foreground-color;
+    padding: 1em;
+    font-size: 20px;
+    border-bottom: $border;
+    position: relative;
+
+    .text {
+        flex: 1;
+    }
+
+    .slot {
+        position: absolute;
+        right: 1em;
+        top: 0;
+        bottom: 0;
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+    }
 }

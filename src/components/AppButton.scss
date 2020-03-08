@@ -1,0 +1,26 @@
+$disabled-color: #ddd;
+
+.app-button {
+    padding: .8em;
+    margin: 2em 0;
+    border: $border;
+    color: $primary-color;
+    display: block;
+    text-align: center;
+    font-size: 12px;
+    font-weight: $font-weight-bold;
+    border-radius: $box-border-radius;
+
+    &:hover {
+        color: $foreground-color;
+        background-color: $primary-color;
+        border-color: $primary-color;
+    }
+
+    &.disabled, &.working {
+        border-color: $disabled-color;
+        color: $disabled-color;
+        cursor: not-allowed;
+        transform: none;
+    }
+}

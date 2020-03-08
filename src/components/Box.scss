@@ -1,20 +1,20 @@
 .box {
-  margin: $box-spacing / 2;
-  background-color: $foreground-color;
-  border: $border;
-  box-shadow: $box-shadow;
-  border-radius: $box-border-radius;
-  flex: 1;
+    margin: $box-spacing ($box-spacing / 2);
+    background-color: $foreground-color;
+    border: $border;
+    box-shadow: $box-shadow;
+    border-radius: $box-border-radius;
+    flex: 1;
 
-  .content {
-    padding: $box-spacing;
-  }
+    .content {
+        padding: $box-spacing;
+    }
 
-  &:first-child {
-    margin-left: $box-spacing;
-  }
+    &:first-child {
+        margin-left: $box-spacing;
+    }
 
-  &:last-child {
-    margin-right: $box-spacing;
-  }
+    &:last-child {
+        margin-right: $box-spacing;
+    }
 }

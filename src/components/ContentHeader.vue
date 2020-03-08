@@ -1,6 +1,11 @@
 <template>
     <div class="content-header">
-        {{ text }}
+        <div class="text">
+            {{ text }}
+        </div>
+        <div class="slot">
+            <slot></slot>
+        </div>
     </div>
 </template>
 <script lang="ts" src="./ContentHeader.ts"></script>
