@@ -19,9 +19,9 @@ $disabled-color: #ddd;
     }
 
     &.disabled, &.working {
-        border-color: $disabled-color;
         color: $disabled-color;
+        background-color: inherit;
+        border-color: inherit;
         cursor: not-allowed;
-        transform: none;
     }
 }

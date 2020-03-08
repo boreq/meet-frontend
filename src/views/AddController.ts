@@ -1,13 +1,13 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { ApiService } from '@/services/ApiService';
-import { Controller } from '@/model/Controller';
 import ContentHeader from '@/components/ContentHeader.vue';
 import Boxes from '@/components/Boxes.vue';
 import BoxesRow from '@/components/BoxesRow.vue';
 import Box from '@/components/Box.vue';
-import Devices from '@/components/Devices.vue';
 import AppButton from '@/components/AppButton.vue';
 import Notifications from '@/components/Notifications';
+import FormInput from '@/components/FormInput.vue';
+import { AddControllerCommand } from '@/model/AddControllerCommand';
 
 
 @Component({
@@ -16,18 +16,46 @@ import Notifications from '@/components/Notifications';
         Boxes,
         BoxesRow,
         Box,
-        Devices,
         AppButton,
+        FormInput,
     },
 })
 export default class AddController extends Vue {
 
-    controller: Controller;
+    cmd = new AddControllerCommand();
+    working = false;
 
     private readonly apiService = new ApiService();
 
     created(): void {
         this.load();
+    }
+
+    submit(): void {
+        if (!this.formValid) {
+            return;
+        }
+
+        // ...
+        this.working = true;
+    }
+
+    goToControllers(): void {
+        this.$router.push('controllers');
+    }
+
+    get formValid(): boolean {
+        return !this.formErrors || this.formErrors.length === 0;
+    }
+
+    get formErrors(): string[] {
+        const errors = [];
+
+        if (!this.cmd.address) {
+            errors.push('Address can not be empty.');
+        }
+
+        return errors;
     }
 
     private load(): void {
