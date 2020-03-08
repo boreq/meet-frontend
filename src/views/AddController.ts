@@ -20,9 +20,9 @@ import Notifications from '@/components/Notifications';
         AppButton,
     },
 })
-export default class Controllers extends Vue {
+export default class AddController extends Vue {
 
-    controllers: Controller[] = null;
+    controller: Controller;
 
     private readonly apiService = new ApiService();
 
@@ -30,15 +30,11 @@ export default class Controllers extends Vue {
         this.load();
     }
 
-    addController(): void {
-        this.$router.push('add-controller');
-    }
-
     private load(): void {
         this.apiService.listControllers()
             .then(
                 response => {
-                    this.controllers = response.data;
+                    // this.controllers = response.data;
                 },
                 error => {
                     Notifications.pushError(this, 'Could not load the controllers.', error);

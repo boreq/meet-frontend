@@ -2,7 +2,8 @@ $disabled-color: #ddd;
 
 .app-button {
     padding: .8em;
-    margin: 2em 0;
+    margin: 1em .5em;
+    display: block;
     border: $border;
     color: $primary-color;
     display: block;

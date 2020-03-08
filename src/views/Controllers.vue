@@ -1,7 +1,7 @@
 <template>
     <div class="controllers">
         <content-header text="Controllers">
-            <app-button text="Add controller"></app-button>
+            <app-button text="Add controller" @click="addController"></app-button>
         </content-header>
 
         <boxes>
