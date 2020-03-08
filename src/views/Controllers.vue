@@ -10,7 +10,7 @@
                     <boxes-row v-for="controller of controllers">
                         <box text="Controller">
                             <ul class="properties">
-                                <li class="property">
+                                <li class="property" v-tooltip="'Controller UUID.'">
                                     <div class="icon">
                                         <i class="fas fa-fingerprint"></i>
                                     </div>
@@ -18,7 +18,7 @@
                                         <pre>{{ controller.uuid }}</pre>
                                     </div>
                                 </li>
-                                <li class="property">
+                                <li class="property" v-tooltip="'Controller address.'">
                                     <div class="icon">
                                         <i class="fas fa-network-wired"></i>
                                     </div>
