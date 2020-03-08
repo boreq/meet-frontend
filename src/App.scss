@@ -27,18 +27,25 @@ a {
             "header content"
             "menu content";
 
-    .header {
+    > .header {
         grid-area: header;
         border-right: $border;
     }
 
-    .menu {
+    > .menu {
         grid-area: menu;
         border-right: $border;
+        background-color: $foreground-color;
     }
 
-    .content {
+    > .content {
         grid-area: content;
+    }
+
+    > .notifications {
+        position: absolute;
+        bottom: 0;
+        right: 0;
     }
 }
 

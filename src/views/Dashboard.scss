@@ -3,4 +3,8 @@ $padding: 2em;
 .dashboard {
     display: block;
     height: 100%;
+
+    > .content-header {
+        background-color: $foreground-color;
+    }
 }

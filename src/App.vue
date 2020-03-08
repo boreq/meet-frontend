@@ -5,6 +5,7 @@
         <div class="content">
             <router-view/>
         </div>
+        <notifications class="notifications"></notifications>
     </div>
 </template>
 
