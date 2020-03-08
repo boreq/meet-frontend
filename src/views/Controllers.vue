@@ -1,16 +1,39 @@
 <template>
     <div class="controllers">
-        <content-header text="Controllers">
-            <app-button text="Add controller" @click="addController"></app-button>
-        </content-header>
+        <main-layout>
+            <content-header text="Controllers">
+                <app-button text="Add controller" @click="addController"></app-button>
+            </content-header>
 
-        <boxes>
-            <boxes-row>
-                <box text="Devices">
-                    <devices></devices>
-                </box>
-            </boxes-row>
-        </boxes>
+            <main-layout-content>
+                <boxes class="boxes">
+                    <boxes-row v-for="controller of controllers">
+                        <box text="Controller">
+                            <ul class="properties">
+                                <li class="property">
+                                    <div class="icon">
+                                        <i class="fas fa-fingerprint"></i>
+                                    </div>
+                                    <div class="value">
+                                        <pre>{{ controller.uuid }}</pre>
+                                    </div>
+                                </li>
+                                <li class="property">
+                                    <div class="icon">
+                                        <i class="fas fa-network-wired"></i>
+                                    </div>
+                                    <div class="value">
+                                        <pre>{{ controller.address }}</pre>
+                                    </div>
+                                </li>
+                            </ul>
+
+                            <devices></devices>
+                        </box>
+                    </boxes-row>
+                </boxes>
+            </main-layout-content>
+        </main-layout>
     </div>
 </template>
 <script lang="ts" src="./Controllers.ts"></script>

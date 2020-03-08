@@ -5,6 +5,8 @@ import Boxes from '@/components/Boxes.vue';
 import BoxesRow from '@/components/BoxesRow.vue';
 import Box from '@/components/Box.vue';
 import Devices from '@/components/Devices.vue';
+import MainLayout from '@/components/MainLayout.vue';
+import MainLayoutContent from '@/components/MainLayoutContent.vue';
 
 
 @Component({
@@ -14,6 +16,8 @@ import Devices from '@/components/Devices.vue';
         BoxesRow,
         Box,
         Devices,
+        MainLayout,
+        MainLayoutContent,
     },
 })
 export default class Dashboard extends Vue {

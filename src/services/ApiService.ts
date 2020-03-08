@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from 'axios'; // do not add { }, some webshit bs?
 import { Controller } from '@/model/Controller';
+import { AddControllerCommand } from '@/model/AddControllerCommand';
 
 /*
 declare module 'vue-property-decorator' {
@@ -44,8 +45,13 @@ export class ApiService {
     // }
 
     listControllers(): Promise<AxiosResponse<Controller[]>> {
-        const url = `controllers`;
+        const url = `hydro/controllers`;
         return this.axios.get<Controller[]>(process.env.VUE_APP_API_PREFIX + url);
+    }
+
+    addController(cmd: AddControllerCommand): Promise<AxiosResponse<void>> {
+        const url = `hydro/controllers`;
+        return this.axios.post<void>(process.env.VUE_APP_API_PREFIX + url, cmd);
     }
 
     // stats(): Promise<AxiosResponse<Stats>> {

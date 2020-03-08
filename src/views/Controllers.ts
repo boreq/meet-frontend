@@ -8,6 +8,8 @@ import Box from '@/components/Box.vue';
 import Devices from '@/components/Devices.vue';
 import AppButton from '@/components/AppButton.vue';
 import Notifications from '@/components/Notifications';
+import MainLayoutContent from '@/components/MainLayoutContent.vue';
+import MainLayout from '@/components/MainLayout.vue';
 
 
 @Component({
@@ -18,6 +20,8 @@ import Notifications from '@/components/Notifications';
         Box,
         Devices,
         AppButton,
+        MainLayout,
+        MainLayoutContent,
     },
 })
 export default class Controllers extends Vue {

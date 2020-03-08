@@ -8,6 +8,8 @@ import AppButton from '@/components/AppButton.vue';
 import Notifications from '@/components/Notifications';
 import FormInput from '@/components/FormInput.vue';
 import { AddControllerCommand } from '@/model/AddControllerCommand';
+import MainLayout from '@/components/MainLayout.vue';
+import MainLayoutContent from '@/components/MainLayoutContent.vue';
 
 
 @Component({
@@ -18,6 +20,8 @@ import { AddControllerCommand } from '@/model/AddControllerCommand';
         Box,
         AppButton,
         FormInput,
+        MainLayout,
+        MainLayoutContent,
     },
 })
 export default class AddController extends Vue {
@@ -27,17 +31,25 @@ export default class AddController extends Vue {
 
     private readonly apiService = new ApiService();
 
-    created(): void {
-        this.load();
-    }
-
     submit(): void {
         if (!this.formValid) {
             return;
         }
 
-        // ...
         this.working = true;
+        this.apiService.addController(this.cmd)
+            .then(
+                () => {
+                    Notifications.pushSuccess(this, 'Controller added.')
+                    this.goToControllers();
+                },
+                error => {
+                    Notifications.pushError(this, 'Could not add a controller.', error);
+                },
+            ).finally(
+            () => {
+                this.working = false;
+            });
     }
 
     goToControllers(): void {
@@ -57,16 +69,4 @@ export default class AddController extends Vue {
 
         return errors;
     }
-
-    private load(): void {
-        this.apiService.listControllers()
-            .then(
-                response => {
-                    // this.controllers = response.data;
-                },
-                error => {
-                    Notifications.pushError(this, 'Could not load the controllers.', error);
-                });
-    }
-
 }

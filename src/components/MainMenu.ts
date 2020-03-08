@@ -4,6 +4,7 @@ import { Component, Vue } from 'vue-property-decorator';
 class MenuEntry {
     label: string;
     target: string;
+    extra: string[];
 }
 
 @Component
@@ -13,14 +14,19 @@ export default class MainMenu extends Vue {
         {
             label: 'Dashboard',
             target: '/dashboard',
+            extra: [],
         },
         {
             label: 'Controllers',
             target: '/controllers',
+            extra: [
+                '/add-controller',
+            ],
         },
         {
             label: 'Settings',
             target: '/settings',
+            extra: [],
         },
     ];
 
@@ -34,7 +40,11 @@ export default class MainMenu extends Vue {
     }
 
     private isActive(entry: MenuEntry): boolean {
-        return this.$route.fullPath.startsWith(entry.target);
+        const target = [
+            entry.target,
+            ...entry.extra,
+        ].find(target => this.$route.fullPath.startsWith(target));
+        return !!target;
     }
 
 }
