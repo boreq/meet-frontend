@@ -1,0 +1,18 @@
+.box {
+  margin: $box-spacing / 2;
+  background-color: $foreground-color;
+  border: $border;
+  flex: 1;
+
+  .content {
+    padding: $box-spacing;
+  }
+
+  &:first-child {
+    margin-left: $box-spacing;
+  }
+
+  &:last-child {
+    margin-right: $box-spacing;
+  }
+}
