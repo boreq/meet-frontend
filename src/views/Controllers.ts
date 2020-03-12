@@ -42,7 +42,25 @@ export default class Controllers extends Vue {
         this.apiService.listControllers()
             .then(
                 response => {
-                    this.controllers = response.data;
+                    const promises = [];
+                    for (const controller of response.data) {
+                        const promise = this.apiService.listControllerDevices(controller.uuid)
+                            .then(
+                                response => {
+                                    controller.devices = response.data;
+                                },
+                                error => {
+                                    Notifications.pushError(this, 'Could not load the controller devices.', error);
+                                },
+                            );
+                        promises.push(promise);
+                    }
+                    Promise.all(promises)
+                        .then(
+                            _ => {
+                                this.controllers = response.data;
+                            },
+                        );
                 },
                 error => {
                     Notifications.pushError(this, 'Could not load the controllers.', error);

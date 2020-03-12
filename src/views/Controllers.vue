@@ -28,7 +28,7 @@
                                 </li>
                             </ul>
 
-                            <devices></devices>
+                            <devices :devices="controller.devices"></devices>
                         </box>
                     </boxes-row>
                 </boxes>
