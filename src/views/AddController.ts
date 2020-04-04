@@ -10,6 +10,7 @@ import FormInput from '@/components/FormInput.vue';
 import { AddControllerCommand } from '@/model/AddControllerCommand';
 import MainLayout from '@/components/MainLayout.vue';
 import MainLayoutContent from '@/components/MainLayoutContent.vue';
+import BoxContent from '@/components/BoxContent.vue';
 
 
 @Component({
@@ -22,6 +23,7 @@ import MainLayoutContent from '@/components/MainLayoutContent.vue';
         FormInput,
         MainLayout,
         MainLayoutContent,
+        BoxContent,
     },
 })
 export default class AddController extends Vue {

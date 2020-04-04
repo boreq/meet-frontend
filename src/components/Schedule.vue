@@ -1,8 +1,8 @@
 <template>
     <div class="schedule">
         <div class="bar"
-            @click.middle="onMiddleClick" @mousemove="onMouseMove" @mousedown="onMouseDown" @mouseup="onMouseUp" @mouseleave="onMouseLeave">
-            <div class="period" :style="periodStyle(period)" v-for="period in periods">
+            @mousemove="onMouseMove" @mousedown="onMouseDown" @mouseup="onMouseUp" @mouseleave="onMouseLeave">
+            <div class="period" :style="periodStyle(period)" v-for="period in schedule">
                 <div class="wrapper">
                     <div class="label-start">
                         {{ formatTime(period.start) }}

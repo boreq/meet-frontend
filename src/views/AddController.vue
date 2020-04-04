@@ -9,9 +9,14 @@
             <main-layout-content>
                 <boxes>
                     <boxes-row>
-                        <box text="Controller">
-                            <form-input type="text" placeholder="Address" icon="fas fa-network-wired"
-                                        v-model="cmd.address" @submit="submit"></form-input>
+                        <box>
+                            <content-header text="New controller">
+                                <app-button text="Save" v-if="changed"></app-button>
+                            </content-header>
+                            <box-content>
+                                <form-input type="text" placeholder="Address" icon="fas fa-network-wired"
+                                            v-model="cmd.address" @submit="submit"></form-input>
+                            </box-content>
                         </box>
                     </boxes-row>
                 </boxes>

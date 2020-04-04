@@ -1,9 +1,6 @@
 <template>
     <div class="box">
-        <content-header :text="text"></content-header>
-        <div class="content">
-            <slot></slot>
-        </div>
+        <slot></slot>
     </div>
 </template>
 <script lang="ts" src="./Box.ts"></script>

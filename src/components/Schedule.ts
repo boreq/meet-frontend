@@ -1,4 +1,4 @@
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { Period, Time } from '@/model/Period';
 import { TextService } from '@/services/TextService';
 
@@ -6,39 +6,8 @@ import { TextService } from '@/services/TextService';
 @Component
 export default class Schedule extends Vue {
 
-    periods: Period[] = [
-        new Period(new Time(8, 0), new Time(23, 0)),
-        // {
-        //     start: {
-        //         hour: 1,
-        //         minute: 0,
-        //     },
-        //     end: {
-        //         hour: 2,
-        //         minute: 0,
-        //     },
-        // },
-        // {
-        //     start: {
-        //         hour: 4,
-        //         minute: 0,
-        //     },
-        //     end: {
-        //         hour: 8,
-        //         minute: 30,
-        //     },
-        // },
-        // {
-        //     start: {
-        //         hour: 9,
-        //         minute: 0,
-        //     },
-        //     end: {
-        //         hour: 23,
-        //         minute: 15,
-        //     },
-        // },
-    ];
+    @Prop()
+    schedule: Period[];
 
     private adjusting: Period;
     private adjustingStart: boolean;
@@ -47,12 +16,7 @@ export default class Schedule extends Vue {
     private readonly entireDayInMinutes = 24 * 60;
     private readonly step = 10;
     private readonly threshold = 30;
-
-    onMiddleClick(event: MouseEvent): void {
-        const time = this.getTime(event);
-        const period = this.getPeriod(time);
-        this.periods = this.periods.filter(v => v != period);
-    }
+    private readonly buttonMiddle = 1;
 
     onMouseMove(event: MouseEvent): void {
         const time = this.clampToStep(this.getTime(event));
@@ -73,7 +37,7 @@ export default class Schedule extends Vue {
                 return;
             }
 
-            for (const period of this.periods) {
+            for (const period of this.schedule) {
                 if (period.overlaps(newPeriod) && period !== this.adjusting) {
                     return;
                 }
@@ -85,29 +49,37 @@ export default class Schedule extends Vue {
     }
 
     onMouseDown(event: MouseEvent): void {
-        const time = this.getTime(event);
-        const target = this.getNode(time);
-        if (target) {
-            [this.adjusting, this.adjustingStart] = target;
+        if (event.button == this.buttonMiddle) {
+            const time = this.getTime(event);
+            const period = this.getPeriod(time);
+            const schedule = this.schedule.filter(v => v !== period);
+            this.emitChanged(schedule);
         } else {
-            const start = this.clampToStep(time);
-            const end = Schedule.toTime(Schedule.toMinutes(start) + 60);
-            for (const period of this.periods) {
-                if (period.contains(start) || period.contains(end)) {
-                    return;
+            const time = this.getTime(event);
+            const target = this.getNode(time);
+            if (target) {
+                [this.adjusting, this.adjustingStart] = target;
+            } else {
+                const start = this.clampToStep(time);
+                const end = Schedule.toTime(Schedule.toMinutes(start) + 60);
+                for (const period of this.schedule) {
+                    if (period.contains(start) || period.contains(end)) {
+                        return;
+                    }
                 }
-            }
 
-            this.periods.push(new Period(start, end));
+                this.schedule.push(new Period(start, end));
+                this.emitChanged(this.schedule);
+            }
         }
     }
 
     onMouseUp(): void {
-        this.adjusting = null;
+        this.stopAdjusting();
     }
 
     onMouseLeave(): void {
-        this.adjusting = null;
+        this.stopAdjusting();
     }
 
     formatTime(time: Time): string {
@@ -127,7 +99,7 @@ export default class Schedule extends Vue {
     private getNode(time: Time): [Period, boolean] {
         const start = Schedule.toTime(Schedule.toMinutes(time) - this.threshold);
         const end = Schedule.toTime(Schedule.toMinutes(time) + this.threshold);
-        for (const period of this.periods) {
+        for (const period of this.schedule) {
             if (period.start.after(start) && period.start.before(end)) {
                 return [period, true];
             }
@@ -141,7 +113,7 @@ export default class Schedule extends Vue {
     }
 
     private getPeriod(time: Time): Period {
-        for (const period of this.periods) {
+        for (const period of this.schedule) {
             if (period.contains(time)) {
                 return period;
             }
@@ -179,4 +151,16 @@ export default class Schedule extends Vue {
         }
         return value;
     }
+
+    private emitChanged(schedule: Period[]): void {
+        this.$emit('change', schedule);
+    }
+
+    private stopAdjusting(): void {
+        if (this.adjusting) {
+            this.adjusting = null;
+            this.emitChanged(this.schedule);
+        }
+    }
+
 }

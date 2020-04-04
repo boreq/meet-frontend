@@ -6,8 +6,14 @@
             <main-layout-content>
                 <boxes>
                     <boxes-row>
-                        <box text="Devices">
-                            <devices></devices>
+                        <box>
+                            <content-header text="Box">
+                            </content-header>
+                            <box-content>
+                                <p>
+                                    Something cool.
+                                </p>
+                            </box-content>
                         </box>
                     </boxes-row>
                     <boxes-row>

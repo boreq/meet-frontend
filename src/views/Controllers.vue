@@ -7,31 +7,15 @@
 
             <main-layout-content>
                 <boxes class="boxes">
-                    <boxes-row v-for="controller of controllers">
-                        <box text="Controller">
-                            <ul class="properties">
-                                <li class="property" v-tooltip="'Controller UUID.'">
-                                    <div class="icon">
-                                        <i class="fas fa-fingerprint"></i>
-                                    </div>
-                                    <div class="value">
-                                        <pre>{{ controller.uuid }}</pre>
-                                    </div>
-                                </li>
-                                <li class="property" v-tooltip="'Controller address.'">
-                                    <div class="icon">
-                                        <i class="fas fa-network-wired"></i>
-                                    </div>
-                                    <div class="value">
-                                        <pre>{{ controller.address }}</pre>
-                                    </div>
-                                </li>
-                            </ul>
-
-                            <devices :devices="controller.devices"></devices>
-                        </box>
+                    <boxes-row v-for="(controller, index) of controllers">
+                        <controller :controller="controller" @devices-changed="devicesChanged(index, $event)" @save-devices=""></controller>
                     </boxes-row>
                 </boxes>
+
+                <spinner class="loading" v-if="controllers === null"></spinner>
+                <p class="empty" v-if="controllers && controllers.length === 0">
+                    There are no controllers.
+                </p>
             </main-layout-content>
         </main-layout>
     </div>

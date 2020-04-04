@@ -4,21 +4,16 @@ $padding: 2em;
     display: block;
     height: 100%;
 
-    .properties {
-        list-style-type: none;
-        display: flex;
-        margin: 0;
-        padding: 0;
+    .loading {
+        display: block;
+        font-size: 30px;
+        margin: 2em 0;
+        text-align: center;
+    }
 
-        .property {
-            flex: 1;
-            display: flex;
-            flex-flow: column nowrap;
-            align-items: center;
-
-            .icon {
-                font-size: 20px;
-            }
-        }
+    .empty {
+        font-size: 16px;
+        text-align: center;
+        color: $text-color-dimmed;
     }
 }
