@@ -1,5 +1,6 @@
 <template>
     <div class="meet">
+        <app-visualisation></app-visualisation>
         <app-webcam></app-webcam>
     </div>
 </template>

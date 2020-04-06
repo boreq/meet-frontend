@@ -11,12 +11,6 @@ import AppButton from '@/components/AppButton.vue';
 })
 export default class Create extends Vue {
 
-    created(): void {
-    }
-
-    destroyed(): void {
-    }
-
     create(): void {
         this.$router.push({name: 'meet', params: {id: '123'}});
     }
