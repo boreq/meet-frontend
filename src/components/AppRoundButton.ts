@@ -6,7 +6,7 @@ import AppSpinner from '@/components/AppSpinner.vue';
         AppSpinner,
     },
 })
-export default class AppButton extends Vue {
+export default class AppRoundButton extends Vue {
 
     @Prop()
     disabled: boolean;

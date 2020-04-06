@@ -1,15 +1,10 @@
 import { Component, Vue } from 'vue-property-decorator';
-
-import MainHeader from '@/components/MainHeader.vue';
-import MainMenu from '@/components/MainMenu.vue';
-import Notifications from '@/components/Notifications.vue';
+import AppNotifications from '@/components/AppNotifications.vue';
 
 
 @Component({
     components: {
-        MainHeader,
-        MainMenu,
-        Notifications,
+        AppNotifications,
     },
 })
 export default class App extends Vue {

@@ -1,7 +1,8 @@
 $disabled-color: #ddd;
 
-.app-button {
-    padding: .8em;
+$size: 40px;
+
+.app-round-button {
     margin: 1em .5em;
     display: block;
     border: $border;
@@ -10,7 +11,15 @@ $disabled-color: #ddd;
     text-align: center;
     font-size: 12px;
     font-weight: $font-weight-bold;
-    border-radius: $box-border-radius;
+    border-radius: 100%;
+
+    .content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: $size;
+        height: $size;
+    }
 
     &:hover {
         color: $text-color;

@@ -1,11 +1,9 @@
 <template>
     <div id="app">
-        <main-header class="header"></main-header>
-        <main-menu class="menu"></main-menu>
         <div class="content">
             <router-view/>
         </div>
-        <notifications class="notifications"></notifications>
+        <app-notifications class="notifications"></app-notifications>
     </div>
 </template>
 

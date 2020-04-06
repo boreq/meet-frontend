@@ -2,20 +2,20 @@ $font-weight-normal: 400;
 $font-weight-bold: 700;
 $font-weight-black: 900;
 
-$foreground-color: #fff;
 $background-color: #fbfbfd;
 
 $text-color: #3E3F42;
 $text-color-dimmed: #9EA0A5;
 
 $border-color: #eaedf3;
-$border: 1px solid $border-color;
+$border-width: 1px;
+$border: $border-width solid $border-color;
 
-$box-spacing: 2em;
+//$box-spacing: 2em;
 $box-border-radius: 5px;
 $box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
 
 //$primary-color: #1665d8;
-$primary-color: #34aa44;
+$primary-color: #E91E63;
 
 

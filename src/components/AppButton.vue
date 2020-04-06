@@ -1,6 +1,8 @@
 <template>
     <a class="app-button" :class="{ disabled: disabled, working: working }" @click="onClick">
-        <span v-if="!working">{{ text }}</span>
+        <span v-if="!working">
+            <slot></slot>
+        </span>
         <spinner v-if="working"></spinner>
     </a>
 </template>

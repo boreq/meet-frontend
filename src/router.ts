@@ -1,9 +1,8 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-
-import Dashboard from '@/views/Dashboard.vue';
-import Controllers from '@/views/Controllers.vue';
-import AddController from '@/views/AddController.vue';
+import Home from '@/views/Home.vue';
+import Create from '@/views/Create.vue';
+import Meet from '@/views/Meet.vue';
 
 Vue.use(Router);
 
@@ -12,23 +11,23 @@ export default new Router({
     base: process.env.BASE_URL,
     routes: [
         {
-            path: '/dashboard',
-            name: 'dashboard',
-            component: Dashboard,
+            path: '/',
+            name: 'home',
+            component: Home,
         },
         {
-            path: '/controllers',
-            name: 'controllers',
-            component: Controllers,
+            path: '/create',
+            name: 'create',
+            component: Create,
         },
         {
-            path: '/add-controller',
-            name: 'add-controllers',
-            component: AddController,
+            path: '/meet/:id',
+            name: 'meet',
+            component: Meet,
         },
         {
             path: '*',
-            redirect: 'dashboard',
+            redirect: 'home',
         },
     ],
 });
