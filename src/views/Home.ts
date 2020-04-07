@@ -5,11 +5,4 @@ import { Component, Vue } from 'vue-property-decorator';
     components: {},
 })
 export default class Home extends Vue {
-
-    created(): void {
-    }
-
-    destroyed(): void {
-    }
-
 }
