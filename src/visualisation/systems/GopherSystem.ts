@@ -3,6 +3,7 @@ import { Entity } from '@/visualisation/ecs/Entity';
 import { Key, Keyboard } from '@/visualisation/input/Keyboard';
 import { World } from '@/visualisation/ecs/World';
 import { Gopher } from '@/visualisation/entities/Gopher';
+import { Sprite } from '@/visualisation/Sprite';
 
 export class GopherSystem implements System {
 
@@ -16,6 +17,9 @@ export class GopherSystem implements System {
             position: {
                 x: 0,
                 y: 0,
+            },
+            render: {
+                sprite: Sprite.Gopher,
             },
         };
 
@@ -42,10 +46,10 @@ export class GopherSystem implements System {
         }
     }
 
-    add(entity: Entity): void {
+    addEntity(): void {
     }
 
-    remove(entity: Entity): void {
+    removeEntity(): void {
     }
 
 }

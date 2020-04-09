@@ -1,15 +1,17 @@
 import * as PIXI from 'pixi.js';
 import { Sprite } from '@/visualisation/Sprite';
 import { World } from '@/visualisation/ecs/World';
-import { EventKeyboard, Keyboard } from '@/visualisation/input/Keyboard';
+import { EventKeyboard } from '@/visualisation/input/Keyboard';
 import { GopherSystem } from '@/visualisation/systems/GopherSystem';
 import { RenderingSystem } from '@/visualisation/systems/RenderingSystem';
+import { Map } from '@/visualisation/Map';
+import { MapSystem } from '@/visualisation/systems/MapSystem';
+import AppSpinner from '@/components/AppSpinner';
 
 export class Visualisation {
 
     private app: PIXI.Application;
     private world: World;
-    private keyboard: Keyboard;
 
     constructor() {
         this.app = new PIXI.Application({width: 256, height: 256});
@@ -28,10 +30,21 @@ export class Visualisation {
     }
 
     private setup(): void {
-        this.keyboard = new EventKeyboard();
+        const keyboard = new EventKeyboard();
+
+        const map: Map = {
+            tiles: [
+                [Sprite.Dirt, Sprite.Dirt, Sprite.Dirt, Sprite.Dirt, Sprite.Dirt],
+                [Sprite.Grass, Sprite.Dirt, Sprite.Grass, Sprite.Dirt, Sprite.Grass],
+                [Sprite.Grass, Sprite.Dirt, Sprite.Grass, Sprite.Dirt, Sprite.Grass],
+                [Sprite.Grass, Sprite.Dirt, Sprite.Grass, Sprite.Dirt, Sprite.Grass],
+                [Sprite.Grass, Sprite.Dirt, Sprite.Grass, Sprite.Dirt, Sprite.Grass],
+            ],
+        };
 
         this.world = new World();
-        this.world.addSystem(new GopherSystem(this.keyboard, this.world));
+        this.world.addSystem(new MapSystem(map, this.world));
+        this.world.addSystem(new GopherSystem(keyboard, this.world));
         this.world.addSystem(new RenderingSystem(this.app));
 
         this.world.setup();

@@ -5,7 +5,7 @@ export interface System {
 
     update(dt: number): void;
 
-    add(entity: Entity): void;
+    addEntity(entity: Entity): void;
 
-    remove(entity: Entity): void;
+    removeEntity(entity: Entity): void;
 }

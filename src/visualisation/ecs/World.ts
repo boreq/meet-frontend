@@ -15,7 +15,7 @@ export class World {
 
     addEntity(entity: Entity): void {
         for (const system of this.systems) {
-            system.add(entity);
+            system.addEntity(entity);
         }
     }
 
