@@ -32,12 +32,12 @@ export class EventKeyboard implements Keyboard {
     }
 
     private onKeyDown(event: KeyboardEvent): void {
-        console.log('down', event);
+        // console.log('down', event);
         this.keystate.set(event.code, true);
     }
 
     private onKeyUp(event: KeyboardEvent): void {
-        console.log('up', event);
+        // console.log('up', event);
         this.keystate.set(event.code, false);
     }
 

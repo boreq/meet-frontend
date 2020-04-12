@@ -41,8 +41,6 @@ export class RenderingSystem implements System {
 
     addEntity(entity: Entity): void {
         if (isRenderable(entity)) {
-            console.log('adding a renderable entity', entity);
-
             const sprite = new PIXI.Sprite(
                 this.app.loader.resources[entity.render.sprite].texture,
             );
