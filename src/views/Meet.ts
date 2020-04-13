@@ -32,16 +32,16 @@ export default class Meet extends Vue {
 
         peerConnection.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
             if (event.candidate === null) {
-                console.log('local session description', JSON.stringify(peerConnection.localDescription, null, 4));
+                // console.log('local session description', JSON.stringify(peerConnection.localDescription, null, 4));
                 const sdp = btoa(JSON.stringify(peerConnection.localDescription));
                 this.api.joinMeeting('some-meeting', {
                     sdp: sdp,
                 })
                     .then(
                         response => {
-                            console.log(response.data.sdp);
+                            // console.log(response.data.sdp);
                             peerConnection.setRemoteDescription(JSON.parse(atob(response.data.sdp)));
-                            console.log('sdp sent');
+                            console.log('remote sdp set');
                         },
                         err => {
                             console.log('sdp error', err);
@@ -51,9 +51,24 @@ export default class Meet extends Vue {
         };
 
         // if (isPublisher) {
+
+        peerConnection.ontrack = (event: RTCTrackEvent) => {
+            console.log('track id', event.track.id);
+            console.log('track label', event.track.label);
+            // var el = document.getElementById('video1');
+            // el.srcObject = event.streams[0];
+            // el.autoplay = true;
+            // el.controls = true;
+        };
+
+        peerConnection.onnegotiationneeded = (event: Event) => {
+            console.log('negotation needed', event);
+        };
+
         navigator.mediaDevices.getUserMedia({video: true, audio: false})
             .then(stream => {
                 // peerConnection.addStream(document.getElementById('video1').srcObject = stream);
+                peerConnection.addTransceiver('video');
                 for (const track of stream.getTracks()) {
                     peerConnection.addTrack(track);
                 }
