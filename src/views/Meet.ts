@@ -3,8 +3,23 @@ import AppWebcam from '@/components/AppWebcam.vue';
 import AppVisualisation from '@/components/AppVisualisation.vue';
 import { ApiService } from '@/services/ApiService';
 import { IncomingMessage, IncomingMessageType, OutgoingMessage } from '@/dto/Message';
-import { NameChangedMessage, ReceivedMessage } from '@/dto/messages/received';
-import { SentMessage, SetNameMessage } from '@/dto/messages/sent';
+import {
+    HelloMessage,
+    JoinedMessage,
+    NameChangedMessage,
+    QuitMessage,
+    ReceivedMessage,
+    RemoteIceCandidateMessage,
+    RemoteSessionDescriptionMessage,
+} from '@/dto/messages/received';
+import {
+    LocalIceCandidateMessage,
+    LocalSessionDescriptionMessage,
+    SentMessage,
+    SetNameMessage,
+} from '@/dto/messages/sent';
+import { Participant } from '@/model/Participant';
+import { WebRTCCancer } from '@/webrtc/webrtc';
 
 @Component({
     components: {
@@ -14,6 +29,8 @@ import { SentMessage, SetNameMessage } from '@/dto/messages/sent';
 })
 export default class Meet extends Vue {
 
+    private localParticipantUUID: string;
+    private participants = new Map<string, Participant>();
     private websocket: WebSocket;
 
     private readonly api = new ApiService();
@@ -22,25 +39,30 @@ export default class Meet extends Vue {
         this.connect();
     }
 
+    destroyed(): void {
+        if (this.websocket) {
+            this.websocket.close();
+        }
+    }
+
     private connect(): void {
         this.websocket = this.api.joinMeeting('some-meeting');
 
         this.websocket.onclose = (event: CloseEvent) => {
-            console.log('close', event);
+            console.log('websocket onclose', event);
         };
 
         this.websocket.onerror = (event: Event) => {
-            console.log('error', event);
+            console.log('websocket onerror', event);
         };
 
         this.websocket.onopen = (event: Event) => {
-            console.log('open', event);
+            console.log('websocket onopen', event);
             this.setName('some-name');
         };
 
-        this.websocket.onmessage = (event: MessageEvent) => {
-            console.log('message', event);
-            this.receive(event.data);
+        this.websocket.onmessage = async (event: MessageEvent) => {
+            await this.receive(event.data);
         };
     }
 
@@ -49,21 +71,96 @@ export default class Meet extends Vue {
         this.send(msg);
     }
 
-    private receive(payload: string): void {
+    private async receive(payload: string): Promise<void> {
         const msg: IncomingMessage = JSON.parse(payload);
         const wrappedMsg: ReceivedMessage = JSON.parse(msg.payload);
 
+        console.log('received message', msg.messageType, wrappedMsg);
+
         switch (msg.messageType) {
+            case IncomingMessageType.Hello:
+                await this.onHello(wrappedMsg as HelloMessage);
+                break;
+            case IncomingMessageType.Joined:
+                await this.onJoined(wrappedMsg as JoinedMessage);
+                break;
+            case IncomingMessageType.Quit:
+                await this.onQuit(wrappedMsg as QuitMessage);
+                break;
             case IncomingMessageType.NameChanged:
-                this.onNameChanged(wrappedMsg as NameChangedMessage);
+                await this.onNameChanged(wrappedMsg as NameChangedMessage);
+                break;
+            case IncomingMessageType.RemoteSessionDescription:
+                await this.onRemoteSessionDescription(wrappedMsg as RemoteSessionDescriptionMessage);
+                break;
+            case IncomingMessageType.RemoteIceCandidate:
+                await this.onRemoteIceCandidate(wrappedMsg as RemoteIceCandidateMessage);
                 break;
             default:
-                console.log('unknown message', msg);
+                console.warn('unknown message', msg);
         }
     }
 
+    private onHello(msg: JoinedMessage): void {
+        this.localParticipantUUID = msg.participantUUID;
+    }
+
+    private onJoined(msg: JoinedMessage): void {
+        const constraints: MediaStreamConstraints = {
+            video: true,
+            audio: true,
+        };
+
+        const webrtc = new WebRTCCancer(
+            this.localParticipantUUID,
+            msg.participantUUID,
+            s => {
+                this.send(new LocalSessionDescriptionMessage(msg.participantUUID, s));
+            },
+            s => {
+                this.send(new LocalIceCandidateMessage(msg.participantUUID, s));
+            },
+            event => {
+                event.track.onunmute = () => {
+                    //if (remoteVideo.srcObject) {
+                    //    return;
+                    //}
+                    //remoteVideo.srcObject = event.streams[0];
+                    //remoteVideo.play();
+
+                    // var el = document.getElementById('video1');
+                    // el.srcObject = event.streams[0];
+                    // el.autoplay = true;
+                    // el.controls = true;
+                };
+            },
+            constraints,
+        );
+
+        const participant = new Participant(msg.participantUUID, webrtc);
+        this.participants.set(msg.participantUUID, participant);
+    }
+
+    private onQuit(msg: QuitMessage): void {
+        const participant = this.participants.get(msg.participantUUID);
+        if (participant) {
+            participant.webrtc.close();
+        }
+        this.participants.delete(msg.participantUUID);
+    }
+
     private onNameChanged(msg: NameChangedMessage): void {
-        console.log('received name changed message', msg);
+        this.participants.get(msg.participantUUID).name = msg.name;
+    }
+
+    private async onRemoteSessionDescription(msg: RemoteSessionDescriptionMessage): Promise<void> {
+        const participant = this.participants.get(msg.participantUUID);
+        return participant.webrtc.onRemoteSessionDescription(msg.sessionDescription);
+    }
+
+    private async onRemoteIceCandidate(msg: RemoteIceCandidateMessage): Promise<void> {
+        const participant = this.participants.get(msg.participantUUID);
+        return participant.webrtc.onRemoteIceCandidate(msg.iceCandidate);
     }
 
     private send(msg: SentMessage): void {
@@ -74,77 +171,4 @@ export default class Meet extends Vue {
         this.websocket.send(JSON.stringify(outgoingMessage));
     }
 
-    // private a(): void {
-    //     const peerConnection = new RTCPeerConnection({
-    //         iceServers: [
-    //             {
-    //                 urls: 'stun:stun.l.google.com:19302',
-    //             },
-    //         ],
-    //     });
-    //
-    //     peerConnection.oniceconnectionstatechange = (event: Event) => {
-    //         console.log('state change', peerConnection.iceConnectionState);
-    //     };
-    //
-    //     peerConnection.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
-    //         if (event.candidate === null) {
-    //             // console.log('local session description', JSON.stringify(peerConnection.localDescription, null, 4));
-    //             const sdp = btoa(JSON.stringify(peerConnection.localDescription));
-    //             this.api.joinMeeting('some-meeting', {
-    //                 sdp: sdp,
-    //             })
-    //                 .then(
-    //                     response => {
-    //                         // console.log(response.data.sdp);
-    //                         peerConnection.setRemoteDescription(JSON.parse(atob(response.data.sdp)));
-    //                         console.log('remote sdp set');
-    //                     },
-    //                     err => {
-    //                         console.log('sdp error', err);
-    //                     },
-    //                 );
-    //         }
-    //     };
-    //
-    //     // if (isPublisher) {
-    //
-    //     peerConnection.ontrack = (event: RTCTrackEvent) => {
-    //         console.log('track id', event.track.id);
-    //         console.log('track label', event.track.label);
-    //         // var el = document.getElementById('video1');
-    //         // el.srcObject = event.streams[0];
-    //         // el.autoplay = true;
-    //         // el.controls = true;
-    //     };
-    //
-    //     peerConnection.onnegotiationneeded = (event: Event) => {
-    //         console.log('negotation needed', event);
-    //     };
-    //
-    //     navigator.mediaDevices.getUserMedia({video: true, audio: false})
-    //         .then(stream => {
-    //             // peerConnection.addStream(document.getElementById('video1').srcObject = stream);
-    //             peerConnection.addTransceiver('video');
-    //             for (const track of stream.getTracks()) {
-    //                 peerConnection.addTrack(track);
-    //             }
-    //             peerConnection.createOffer()
-    //                 .then(d => peerConnection.setLocalDescription(d))
-    //                 .catch(e => console.log('create offer', e));
-    //         }).catch(e => console.log('get user media', e));
-    //     // } else {
-    //     //     peerConnection.addTransceiver('video')
-    //     //     peerConnection.createOffer()
-    //     //         .then(d => peerConnection.setLocalDescription(d))
-    //     //         .catch(log)
-    //     //
-    //     //     peerConnection.ontrack = function (event) {
-    //     //         var el = document.getElementById('video1')
-    //     //         el.srcObject = event.streams[0]
-    //     //         el.autoplay = true
-    //     //         el.controls = true
-    //     //     }
-    //     // }
-    // }
 }

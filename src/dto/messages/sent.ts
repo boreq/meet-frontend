@@ -13,3 +13,23 @@ export class SetNameMessage implements SentMessage {
         return OutgoingMessageType.SetName;
     }
 }
+
+export class LocalSessionDescriptionMessage implements SentMessage {
+
+    constructor(public targetParticipantUUID: string, public sessionDescription: string) {
+    }
+
+    getMessageType(): OutgoingMessageType {
+        return OutgoingMessageType.LocalSessionDescription;
+    }
+}
+
+export class LocalIceCandidateMessage implements SentMessage {
+
+    constructor(public targetParticipantUUID: string, public iceCandidate: string) {
+    }
+
+    getMessageType(): OutgoingMessageType {
+        return OutgoingMessageType.LocalIceCandidate;
+    }
+}

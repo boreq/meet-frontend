@@ -1,5 +1,4 @@
 import { System } from '@/visualisation/ecs/System';
-import { Entity } from '@/visualisation/ecs/Entity';
 import { World } from '@/visualisation/ecs/World';
 import { Map } from '@/visualisation/Map';
 import { Tile } from '@/visualisation/entities/Tile';

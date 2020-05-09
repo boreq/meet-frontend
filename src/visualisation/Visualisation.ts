@@ -6,7 +6,6 @@ import { GopherSystem } from '@/visualisation/systems/GopherSystem';
 import { RenderingSystem } from '@/visualisation/systems/RenderingSystem';
 import { Map } from '@/visualisation/Map';
 import { MapSystem } from '@/visualisation/systems/MapSystem';
-import AppSpinner from '@/components/AppSpinner';
 
 export class Visualisation {
 

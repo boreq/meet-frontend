@@ -1,5 +1,4 @@
 import { System } from '@/visualisation/ecs/System';
-import { Entity } from '@/visualisation/ecs/Entity';
 import { Key, Keyboard } from '@/visualisation/input/Keyboard';
 import { World } from '@/visualisation/ecs/World';
 import { Gopher } from '@/visualisation/entities/Gopher';

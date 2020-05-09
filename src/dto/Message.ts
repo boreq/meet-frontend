@@ -4,7 +4,12 @@ export class IncomingMessage {
 }
 
 export enum IncomingMessageType {
+    Hello = 'hello',
+    Joined = 'joined',
+    Quit = 'quit',
     NameChanged = 'nameChanged',
+    RemoteSessionDescription = 'remoteSessionDescription',
+    RemoteIceCandidate = 'remoteIceCandidate',
 }
 
 export class OutgoingMessage {
@@ -14,4 +19,6 @@ export class OutgoingMessage {
 
 export enum OutgoingMessageType {
     SetName = 'setName',
+    LocalSessionDescription = 'localSessionDescription',
+    LocalIceCandidate = 'localIceCandidate',
 }
