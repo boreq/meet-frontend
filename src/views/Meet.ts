@@ -19,7 +19,7 @@ import {
     SetNameMessage,
 } from '@/dto/messages/sent';
 import { Participant } from '@/model/Participant';
-import { WebRTCCancer } from '@/webrtc/webrtc';
+import { WebRTCCancer } from '@/webrtc/WebRTCCancer';
 
 @Component({
     components: {
@@ -101,7 +101,7 @@ export default class Meet extends Vue {
         }
     }
 
-    private onHello(msg: JoinedMessage): void {
+    private onHello(msg: HelloMessage): void {
         this.localParticipantUUID = msg.participantUUID;
     }
 

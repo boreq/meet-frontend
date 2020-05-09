@@ -1,4 +1,4 @@
-import { WebRTCCancer } from '@/webrtc/webrtc';
+import { WebRTCCancer } from '@/webrtc/WebRTCCancer';
 
 export class Participant {
     uuid: string;
