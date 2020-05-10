@@ -1,17 +1,17 @@
 import { System } from '@/visualisation/ecs/System';
 import { Keyboard } from '@/visualisation/input/Keyboard';
-import { PositionComponent } from '../components/PositionComponent';
 import { Entity } from '../ecs/Entity';
 import { ControlComponent } from '../components/ControlComponent';
+import { SpeedComponent } from '@/visualisation/components/SpeedComponent';
 
 export interface Controlable {
-    position: PositionComponent;
+    speed: SpeedComponent;
     control: ControlComponent;
 }
 
 function isControlable(entity: Entity): entity is Controlable {
     return (entity as Controlable).control !== undefined &&
-        (entity as Controlable).position !== undefined;
+        (entity as Controlable).speed !== undefined;
 }
 
 export class ControlSystem implements System {
@@ -24,24 +24,24 @@ export class ControlSystem implements System {
     setup(): void {
     }
 
-    update(dt: number): void {
+    update(): void {
         const speed = 1;
 
         for (const entity of this.entities) {
             if (this.keyboard.isDown(entity.control.left)) {
-                entity.position.x -= speed * dt;
-            }
-
-            if (this.keyboard.isDown(entity.control.right)) {
-                entity.position.x += speed * dt;
+                entity.speed.x = -speed;
+            } else if (this.keyboard.isDown(entity.control.right)) {
+                entity.speed.x = speed;
+            } else {
+                entity.speed.x = 0;
             }
 
             if (this.keyboard.isDown(entity.control.up)) {
-                entity.position.y -= speed * dt;
-            }
-
-            if (this.keyboard.isDown(entity.control.down)) {
-                entity.position.y += speed * dt;
+                entity.speed.y = -speed;
+            } else if (this.keyboard.isDown(entity.control.down)) {
+                entity.speed.y = speed;
+            } else {
+                entity.speed.y = 0;
             }
         }
     }

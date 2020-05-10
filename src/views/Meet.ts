@@ -10,7 +10,8 @@ import {
     QuitMessage,
     ReceivedMessage,
     RemoteIceCandidateMessage,
-    RemoteSessionDescriptionMessage, VisualisationStateMessage,
+    RemoteSessionDescriptionMessage,
+    VisualisationStateMessage,
 } from '@/dto/messages/received';
 import {
     LocalIceCandidateMessage,
@@ -22,7 +23,9 @@ import {
 import { Participant } from '@/model/Participant';
 import { WebRTCCancer } from '@/webrtc/WebRTCCancer';
 import { VisualisationParticipant } from '@/components/AppVisualisation';
+import { VisualisationStateDto } from '@/dto/VisualisationState';
 import { VisualisationState } from '@/visualisation/VisualisationState';
+import { Vector } from '@/visualisation/types/Vector';
 
 @Component({
     components: {
@@ -187,19 +190,28 @@ export default class Meet extends Vue {
         // todo stop this
 
         if (this.visualisation) {
-            const state = this.encodeVisusalisationState(this.visualisation.getState())
+            const state = this.encodeVisusalisationState(this.visualisation.getState());
             this.send(new UpdateVisualisationStateMessage(state));
         }
 
-        window.setTimeout(()=>this.sendVisualisationState(), 500);
+        window.setTimeout(() => this.sendVisualisationState(), 1000);
     }
 
     private encodeVisusalisationState(state: VisualisationState): string {
-        return JSON.stringify(state);
+        const dto: VisualisationStateDto = {
+            position: {
+                x: state.position.x,
+                y: state.position.y,
+            },
+        };
+        return JSON.stringify(dto);
     }
 
     private decodeVisusalisationState(state: string): VisualisationState {
-        return JSON.parse(state);
+        const dto: VisualisationStateDto = JSON.parse(state);
+        return {
+            position: new Vector(dto.position.x, dto.position.y),
+        };
     }
 
     private getVisualisationParticipants(): Map<string, VisualisationParticipant> {

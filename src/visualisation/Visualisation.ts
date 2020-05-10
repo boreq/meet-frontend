@@ -10,16 +10,16 @@ import { ParticipantsSystem } from '@/visualisation/systems/ParticipantsSystem';
 import { VisualisationState } from '@/visualisation/VisualisationState';
 import { ControlSystem } from '@/visualisation/systems/ControlSystem';
 import { Gopher } from '@/visualisation/entities/Gopher';
+import { Vector } from '@/visualisation/types/Vector';
+import { MovementSystem } from '@/visualisation/systems/MovementSystem';
 
 export class Visualisation {
 
     private app: PIXI.Application;
     private world: World;
     private gopher: Gopher = {
-        position: {
-            x: 0,
-            y: 0,
-        },
+        position: new Vector(0, 0),
+        speed: new Vector(0, 0),
         render: {
             sprite: Sprite.Gopher,
         },
@@ -50,10 +50,7 @@ export class Visualisation {
 
     getState(): VisualisationState {
         return {
-            position: {
-                x: this.gopher.position.x,
-                y: this.gopher.position.y,
-            },
+            position: new Vector(this.gopher.position.x, this.gopher.position.y),
         };
     }
 
@@ -82,6 +79,7 @@ export class Visualisation {
         this.world.addSystem(new MapSystem(map, this.world));
         this.world.addSystem(new ControlSystem(keyboard));
         this.world.addSystem(new ParticipantsSystem(this.world, this.participants));
+        this.world.addSystem(new MovementSystem());
         this.world.addSystem(new RenderingSystem(this.app));
         this.world.setup();
 

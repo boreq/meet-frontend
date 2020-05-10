@@ -1,4 +1,4 @@
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 
 import { Visualisation } from '@/visualisation/Visualisation';
 import { Vector } from '@/visualisation/types/Vector';
