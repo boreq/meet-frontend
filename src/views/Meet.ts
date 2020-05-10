@@ -1,4 +1,4 @@
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Ref, Vue } from 'vue-property-decorator';
 import AppWebcam from '@/components/AppWebcam.vue';
 import AppVisualisation from '@/components/AppVisualisation.vue';
 import { ApiService } from '@/services/ApiService';
@@ -10,16 +10,19 @@ import {
     QuitMessage,
     ReceivedMessage,
     RemoteIceCandidateMessage,
-    RemoteSessionDescriptionMessage,
+    RemoteSessionDescriptionMessage, VisualisationStateMessage,
 } from '@/dto/messages/received';
 import {
     LocalIceCandidateMessage,
     LocalSessionDescriptionMessage,
     SentMessage,
     SetNameMessage,
+    UpdateVisualisationStateMessage,
 } from '@/dto/messages/sent';
 import { Participant } from '@/model/Participant';
 import { WebRTCCancer } from '@/webrtc/WebRTCCancer';
+import { VisualisationParticipant } from '@/components/AppVisualisation';
+import { VisualisationState } from '@/visualisation/VisualisationState';
 
 @Component({
     components: {
@@ -33,6 +36,9 @@ export default class Meet extends Vue {
     private participants = new Map<string, Participant>();
     private websocket: WebSocket;
 
+    @Ref('visualisation')
+    readonly visualisation: AppVisualisation;
+
     private readonly api = new ApiService();
 
     mounted(): void {
@@ -44,6 +50,7 @@ export default class Meet extends Vue {
             this.websocket.close();
         }
     }
+
 
     private connect(): void {
         this.websocket = this.api.joinMeeting('some-meeting');
@@ -59,6 +66,7 @@ export default class Meet extends Vue {
         this.websocket.onopen = (event: Event) => {
             console.log('websocket onopen', event);
             this.setName('some-name');
+            this.sendVisualisationState();
         };
 
         this.websocket.onmessage = async (event: MessageEvent) => {
@@ -79,23 +87,19 @@ export default class Meet extends Vue {
 
         switch (msg.messageType) {
             case IncomingMessageType.Hello:
-                await this.onHello(wrappedMsg as HelloMessage);
-                break;
+                return this.onHello(wrappedMsg as HelloMessage);
             case IncomingMessageType.Joined:
-                await this.onJoined(wrappedMsg as JoinedMessage);
-                break;
+                return this.onJoined(wrappedMsg as JoinedMessage);
             case IncomingMessageType.Quit:
-                await this.onQuit(wrappedMsg as QuitMessage);
-                break;
+                return this.onQuit(wrappedMsg as QuitMessage);
             case IncomingMessageType.NameChanged:
-                await this.onNameChanged(wrappedMsg as NameChangedMessage);
-                break;
+                return this.onNameChanged(wrappedMsg as NameChangedMessage);
+            case IncomingMessageType.VisualisationState:
+                return this.onVisualisationState(wrappedMsg as VisualisationStateMessage);
             case IncomingMessageType.RemoteSessionDescription:
-                await this.onRemoteSessionDescription(wrappedMsg as RemoteSessionDescriptionMessage);
-                break;
+                return this.onRemoteSessionDescription(wrappedMsg as RemoteSessionDescriptionMessage);
             case IncomingMessageType.RemoteIceCandidate:
-                await this.onRemoteIceCandidate(wrappedMsg as RemoteIceCandidateMessage);
-                break;
+                return this.onRemoteIceCandidate(wrappedMsg as RemoteIceCandidateMessage);
             default:
                 console.warn('unknown message', msg);
         }
@@ -153,6 +157,11 @@ export default class Meet extends Vue {
         this.participants.get(msg.participantUUID).name = msg.name;
     }
 
+    private onVisualisationState(msg: VisualisationStateMessage): void {
+        this.participants.get(msg.participantUUID).state = this.decodeVisusalisationState(msg.state);
+        this.visualisation.setParticipants(this.getVisualisationParticipants());
+    }
+
     private async onRemoteSessionDescription(msg: RemoteSessionDescriptionMessage): Promise<void> {
         const participant = this.participants.get(msg.participantUUID);
         return participant.webrtc.onRemoteSessionDescription(msg.sessionDescription);
@@ -168,7 +177,39 @@ export default class Meet extends Vue {
             messageType: msg.getMessageType(),
             payload: JSON.stringify(msg),
         };
+
+        console.log('sending message', outgoingMessage);
+
         this.websocket.send(JSON.stringify(outgoingMessage));
+    }
+
+    private sendVisualisationState() {
+        // todo stop this
+
+        if (this.visualisation) {
+            const state = this.encodeVisusalisationState(this.visualisation.getState())
+            this.send(new UpdateVisualisationStateMessage(state));
+        }
+
+        window.setTimeout(()=>this.sendVisualisationState(), 500);
+    }
+
+    private encodeVisusalisationState(state: VisualisationState): string {
+        return JSON.stringify(state);
+    }
+
+    private decodeVisusalisationState(state: string): VisualisationState {
+        return JSON.parse(state);
+    }
+
+    private getVisualisationParticipants(): Map<string, VisualisationParticipant> {
+        const v = new Map<string, VisualisationParticipant>();
+
+        for (const [key, value] of this.participants) {
+            v.set(key, new VisualisationParticipant(value.name, value.state));
+        }
+
+        return v;
     }
 
 }

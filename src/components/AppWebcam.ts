@@ -13,7 +13,7 @@ export default class AppWebcam extends Vue {
                 const video = document.querySelector('video');
                 video.srcObject = mediaStream;
                 video.muted = true;
-                video.onloadedmetadata = e => {
+                video.onloadedmetadata = () => {
                     video.play();
                 };
             }).catch(err => {

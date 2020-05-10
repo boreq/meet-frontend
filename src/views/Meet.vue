@@ -1,7 +1,7 @@
 <template>
     <div class="meet">
         <app-webcam></app-webcam>
-        <app-visualisation></app-visualisation>
+        <app-visualisation ref="visualisation"></app-visualisation>
     </div>
 </template>
 <script lang="ts" src="./Meet.ts"></script>

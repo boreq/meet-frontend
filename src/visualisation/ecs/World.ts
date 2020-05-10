@@ -19,6 +19,12 @@ export class World {
         }
     }
 
+    removeEntity(entity: Entity): void {
+        for (const system of this.systems) {
+            system.removeEntity(entity);
+        }
+    }
+
     setup(): void {
         for (const system of this.systems) {
             system.setup();

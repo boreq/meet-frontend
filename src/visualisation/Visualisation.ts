@@ -1,16 +1,37 @@
 import * as PIXI from 'pixi.js';
 import { Sprite } from '@/visualisation/Sprite';
 import { World } from '@/visualisation/ecs/World';
-import { EventKeyboard } from '@/visualisation/input/Keyboard';
-import { GopherSystem } from '@/visualisation/systems/GopherSystem';
+import { EventKeyboard, Key } from '@/visualisation/input/Keyboard';
 import { RenderingSystem } from '@/visualisation/systems/RenderingSystem';
-import { Map } from '@/visualisation/Map';
+import { WorldMap } from '@/visualisation/WorldMap';
 import { MapSystem } from '@/visualisation/systems/MapSystem';
+import { VisualisationParticipant } from '@/components/AppVisualisation';
+import { ParticipantsSystem } from '@/visualisation/systems/ParticipantsSystem';
+import { VisualisationState } from '@/visualisation/VisualisationState';
+import { ControlSystem } from '@/visualisation/systems/ControlSystem';
+import { Gopher } from '@/visualisation/entities/Gopher';
 
 export class Visualisation {
 
     private app: PIXI.Application;
     private world: World;
+    private gopher: Gopher = {
+        position: {
+            x: 0,
+            y: 0,
+        },
+        render: {
+            sprite: Sprite.Gopher,
+        },
+        control: {
+            up: Key.Up,
+            left: Key.Left,
+            right: Key.Right,
+            down: Key.Down,
+        },
+    };
+
+    private readonly participants = new Map<string, VisualisationParticipant>();
 
     constructor() {
         this.app = new PIXI.Application({width: 256, height: 256});
@@ -18,6 +39,22 @@ export class Visualisation {
         this.app.loader
             .add(this.spritesToLoad())
             .load(() => this.setup());
+    }
+
+    setParticipants(participants: Map<string, VisualisationParticipant>): void {
+        this.participants.clear();
+        for (const [key, value] of participants.entries()) {
+            this.participants.set(key, value);
+        }
+    }
+
+    getState(): VisualisationState {
+        return {
+            position: {
+                x: this.gopher.position.x,
+                y: this.gopher.position.y,
+            },
+        };
     }
 
     canvas(): HTMLCanvasElement {
@@ -31,7 +68,7 @@ export class Visualisation {
     private setup(): void {
         const keyboard = new EventKeyboard();
 
-        const map: Map = {
+        const map: WorldMap = {
             tiles: [
                 [Sprite.Dirt, Sprite.Dirt, Sprite.Dirt, Sprite.Dirt, Sprite.Dirt],
                 [Sprite.Grass, Sprite.Dirt, Sprite.Grass, Sprite.Dirt, Sprite.Grass],
@@ -43,10 +80,12 @@ export class Visualisation {
 
         this.world = new World();
         this.world.addSystem(new MapSystem(map, this.world));
-        this.world.addSystem(new GopherSystem(keyboard, this.world));
+        this.world.addSystem(new ControlSystem(keyboard));
+        this.world.addSystem(new ParticipantsSystem(this.world, this.participants));
         this.world.addSystem(new RenderingSystem(this.app));
-
         this.world.setup();
+
+        this.world.addEntity(this.gopher);
 
         this.app.ticker.add(delta => this.update(this.asDT(delta)));
     }
@@ -67,5 +106,4 @@ export class Visualisation {
         const fps = 60 / delta;
         return 1 / fps;
     }
-
 }

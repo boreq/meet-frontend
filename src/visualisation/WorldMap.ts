@@ -1,5 +1,5 @@
 import { Sprite } from '@/visualisation/Sprite';
 
-export class Map {
+export class WorldMap {
     tiles: Sprite[][];
 }

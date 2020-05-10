@@ -14,6 +14,16 @@ export class SetNameMessage implements SentMessage {
     }
 }
 
+export class UpdateVisualisationStateMessage implements SentMessage {
+
+    constructor(public state: string) {
+    }
+
+    getMessageType(): OutgoingMessageType {
+        return OutgoingMessageType.UpdateVisualisationState;
+    }
+}
+
 export class LocalSessionDescriptionMessage implements SentMessage {
 
     constructor(public targetParticipantUUID: string, public sessionDescription: string) {

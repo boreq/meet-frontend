@@ -1,12 +1,12 @@
 import { System } from '@/visualisation/ecs/System';
 import { World } from '@/visualisation/ecs/World';
-import { Map } from '@/visualisation/Map';
+import { WorldMap } from '@/visualisation/WorldMap';
 import { Tile } from '@/visualisation/entities/Tile';
 import { Vector } from '@/visualisation/types/Vector';
 
 export class MapSystem implements System {
 
-    constructor(private map: Map, private world: World) {
+    constructor(private map: WorldMap, private world: World) {
     }
 
     setup(): void {
@@ -25,7 +25,7 @@ export class MapSystem implements System {
         }
     }
 
-    update(dt: number): void {
+    update(): void {
     }
 
     addEntity(): void {

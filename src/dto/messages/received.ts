@@ -18,6 +18,11 @@ export class NameChangedMessage extends ReceivedMessage {
     name: string;
 }
 
+export class VisualisationStateMessage extends ReceivedMessage {
+    participantUUID: string;
+    state: string;
+}
+
 export class RemoteSessionDescriptionMessage extends ReceivedMessage {
     participantUUID: string;
     sessionDescription: string;

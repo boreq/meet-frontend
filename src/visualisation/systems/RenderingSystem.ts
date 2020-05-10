@@ -27,7 +27,7 @@ export class RenderingSystem implements System {
     setup(): void {
     }
 
-    update(dt: number): void {
+    update(): void {
         for (let i = 0; i < this.entities.length; i++) {
             const sprite = this.sprites[i];
             const entity = this.entities[i];

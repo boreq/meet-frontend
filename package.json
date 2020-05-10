@@ -11,7 +11,7 @@
     "axios": "^0.19.2",
     "js-cookie": "^2.2.1",
     "pixi.js": "^5.2.1",
-    "v-tooltip": "^2.0.3",
+    "v-tooltip": "2.0.2",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.3",
     "vue-property-decorator": "^8.4.1",
