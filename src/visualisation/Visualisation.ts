@@ -35,7 +35,6 @@ export class Visualisation {
     };
     private camera: Camera = {
         position: new Vector(0, 0),
-        speed: new Vector(0, 0),
     };
 
     private readonly participants = new Map<string, VisualisationParticipant>();

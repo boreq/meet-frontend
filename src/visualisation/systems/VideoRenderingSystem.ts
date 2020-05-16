@@ -4,8 +4,8 @@ import { Vector } from '@/visualisation/types/Vector';
 import * as PIXI from 'pixi.js';
 import { PositionComponent } from '@/visualisation/components/PositionComponent';
 import { StreamComponent } from '@/visualisation/components/StreamComponent';
-import Texture = PIXI.Texture;
 import { Camera } from '@/visualisation/entities/Camera';
+import Texture = PIXI.Texture;
 
 export interface VideoRenderable {
     position: PositionComponent;
@@ -17,11 +17,18 @@ function isVideoRenderable(entity: Entity): entity is VideoRenderable {
         (entity as VideoRenderable).streams !== undefined;
 }
 
+class TrackedEntity {
+    constructor(
+        public entity: VideoRenderable,
+        public sprite: PIXI.Sprite,
+        public video: HTMLVideoElement,
+    ) {
+    }
+}
+
 export class VideoRenderingSystem implements System {
 
-    private readonly entities: VideoRenderable[] = [];
-    private readonly sprites: PIXI.Sprite[] = [];
-    private readonly videos: HTMLVideoElement[] = [];
+    private readonly trackedEntities: TrackedEntity[] = [];
 
     private readonly size = new Vector(1, 1);
     private readonly scale = new Vector(100, 100);
@@ -34,24 +41,24 @@ export class VideoRenderingSystem implements System {
     }
 
     update(): void {
-        for (let i = 0; i < this.entities.length; i++) {
-            const sprite = this.sprites[i];
-            const entity = this.entities[i];
-            const video = this.videos[i];
+        for (const trackedEntity of this.trackedEntities) {
+            // const sprite = this.sprites[i];
+            // const entity = this.entities[i];
+            // const video = this.videos[i];
 
             const size = new Vector(this.app.view.width / this.scale.x, this.app.view.height / this.scale.y);
             const topLeftCorner = this.camera.position.subtract(size.multiply(0.5));
 
-            sprite.width = this.size.x * this.scale.x;
-            sprite.height = this.size.y * this.scale.y;
-            sprite.position.x = (entity.position.x + this.offset.x - topLeftCorner.x) * this.scale.x;
-            sprite.position.y = (entity.position.y + this.offset.y - topLeftCorner.y) * this.scale.y;
+            trackedEntity.sprite.width = this.size.x * this.scale.x;
+            trackedEntity.sprite.height = this.size.y * this.scale.y;
+            trackedEntity.sprite.position.x = (trackedEntity.entity.position.x + this.offset.x - topLeftCorner.x) * this.scale.x;
+            trackedEntity.sprite.position.y = (trackedEntity.entity.position.y + this.offset.y - topLeftCorner.y) * this.scale.y;
 
-            const stream = entity.streams.stream;
+            const stream = trackedEntity.entity.streams.stream;
             if (stream) {
-                if (!video.srcObject) {
-                    video.srcObject = stream;
-                    video.play();
+                if (!trackedEntity.video.srcObject) {
+                    trackedEntity.video.srcObject = stream;
+                    trackedEntity.video.play();
                 }
             }
         }
@@ -66,15 +73,18 @@ export class VideoRenderingSystem implements System {
             );
             this.app.stage.addChild(sprite);
 
-            this.sprites.push(sprite);
-            this.entities.push(entity);
-            this.videos.push(video);
+            this.trackedEntities.push(new TrackedEntity(entity, sprite, video));
         }
     }
 
-    removeEntity(): void {
-        // todo implement
-        // index = this.entities.find()
-        // this.entities = this.entities.filter(v => v !== entity);
+    removeEntity(entity: Entity): void {
+        if (isVideoRenderable(entity)) {
+            const index = this.trackedEntities.findIndex(v => v.entity === entity);
+            if (index >= 0) {
+                this.app.stage.removeChild(this.trackedEntities[index].sprite);
+                this.trackedEntities[index].video.remove();
+                this.trackedEntities.splice(index, 1);
+            }
+        }
     }
 }
