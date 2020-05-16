@@ -61,7 +61,7 @@ export class WebRTCCancer {
 
     async onRemoteIceCandidate(s: string): Promise<void> {
         const iceCandidate = this.decodeIceCandidate(s);
-        if (!this.peerConnection || !this.peerConnection.remoteDescription.type) {
+        if (this.canNotAddIceCandidate()) {
             // for some reason ice candidates can be added only after remote
             // description is present so we may have to put a candidate onto a
             // queue
@@ -72,12 +72,20 @@ export class WebRTCCancer {
     }
 
     private async tryAddIceCandidates(): Promise<void> {
-        if (!this.peerConnection || !this.peerConnection.remoteDescription.type) {
+        if (!this.canNotAddIceCandidate()) {
             for (const iceCandidate of this.iceCandidates) {
-                await this.peerConnection.addIceCandidate(iceCandidate);
+                try {
+                    await this.peerConnection.addIceCandidate(iceCandidate);
+                } catch (e) {
+                    console.log('could not add ice candidate', e);
+                }
             }
             this.iceCandidates = [];
         }
+    }
+
+    private canNotAddIceCandidate(): boolean {
+        return !this.peerConnection || !this.peerConnection.remoteDescription || !this.peerConnection.remoteDescription.type;
     }
 
     private webrtcConnect(): void {

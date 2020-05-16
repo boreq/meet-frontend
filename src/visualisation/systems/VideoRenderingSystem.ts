@@ -5,6 +5,7 @@ import * as PIXI from 'pixi.js';
 import { PositionComponent } from '@/visualisation/components/PositionComponent';
 import { StreamComponent } from '@/visualisation/components/StreamComponent';
 import Texture = PIXI.Texture;
+import { Camera } from '@/visualisation/entities/Camera';
 
 export interface VideoRenderable {
     position: PositionComponent;
@@ -26,7 +27,7 @@ export class VideoRenderingSystem implements System {
     private readonly scale = new Vector(100, 100);
     private readonly offset = new Vector(0, -1);
 
-    constructor(private app: PIXI.Application) {
+    constructor(private app: PIXI.Application, private camera: Camera) {
     }
 
     setup(): void {
@@ -38,10 +39,13 @@ export class VideoRenderingSystem implements System {
             const entity = this.entities[i];
             const video = this.videos[i];
 
+            const size = new Vector(this.app.view.width / this.scale.x, this.app.view.height / this.scale.y);
+            const topLeftCorner = this.camera.position.subtract(size.multiply(0.5));
+
             sprite.width = this.size.x * this.scale.x;
             sprite.height = this.size.y * this.scale.y;
-            sprite.position.x = (entity.position.x + this.offset.x) * this.scale.x;
-            sprite.position.y = (entity.position.y + this.offset.y) * this.scale.y;
+            sprite.position.x = (entity.position.x + this.offset.x - topLeftCorner.x) * this.scale.x;
+            sprite.position.y = (entity.position.y + this.offset.y - topLeftCorner.y) * this.scale.y;
 
             const stream = entity.streams.stream;
             if (stream) {

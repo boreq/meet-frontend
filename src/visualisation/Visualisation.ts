@@ -13,6 +13,8 @@ import { Gopher } from '@/visualisation/entities/Gopher';
 import { Vector } from '@/visualisation/types/Vector';
 import { MovementSystem } from '@/visualisation/systems/MovementSystem';
 import { VideoRenderingSystem } from '@/visualisation/systems/VideoRenderingSystem';
+import { Camera } from '@/visualisation/entities/Camera';
+import { CameraSystem } from '@/visualisation/systems/CameraSystem';
 
 export class Visualisation {
 
@@ -30,6 +32,10 @@ export class Visualisation {
             right: Key.Right,
             down: Key.Down,
         },
+    };
+    private camera: Camera = {
+        position: new Vector(0, 0),
+        speed: new Vector(0, 0),
     };
 
     private readonly participants = new Map<string, VisualisationParticipant>();
@@ -81,11 +87,13 @@ export class Visualisation {
         this.world.addSystem(new ControlSystem(keyboard));
         this.world.addSystem(new ParticipantsSystem(this.world, this.participants));
         this.world.addSystem(new MovementSystem());
-        this.world.addSystem(new VideoRenderingSystem(this.app));
-        this.world.addSystem(new RenderingSystem(this.app));
+        this.world.addSystem(new CameraSystem(this.camera, this.gopher));
+        this.world.addSystem(new VideoRenderingSystem(this.app, this.camera));
+        this.world.addSystem(new RenderingSystem(this.app, this.camera));
         this.world.setup();
 
         this.world.addEntity(this.gopher);
+        this.world.addEntity(this.camera);
 
         this.app.ticker.add(delta => this.update(this.asDT(delta)));
     }

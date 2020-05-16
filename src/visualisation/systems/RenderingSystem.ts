@@ -4,6 +4,7 @@ import { Vector } from '@/visualisation/types/Vector';
 import * as PIXI from 'pixi.js';
 import { PositionComponent } from '@/visualisation/components/PositionComponent';
 import { RenderComponent } from '@/visualisation/components/RenderComponent';
+import { Camera } from '@/visualisation/entities/Camera';
 
 export interface Renderable {
     position: PositionComponent;
@@ -21,7 +22,7 @@ export class RenderingSystem implements System {
     private sprites: PIXI.Sprite[] = [];
     private scale = new Vector(100, 100);
 
-    constructor(private app: PIXI.Application) {
+    constructor(private app: PIXI.Application, private camera: Camera) {
     }
 
     setup(): void {
@@ -32,10 +33,13 @@ export class RenderingSystem implements System {
             const sprite = this.sprites[i];
             const entity = this.entities[i];
 
+            const size = new Vector(this.app.view.width / this.scale.x, this.app.view.height / this.scale.y);
+            const topLeftCorner = this.camera.position.subtract(size.multiply(0.5));
+
             sprite.width = 1 * this.scale.x;
             sprite.height = 1 * this.scale.y;
-            sprite.position.x = entity.position.x * this.scale.x;
-            sprite.position.y = entity.position.y * this.scale.y;
+            sprite.position.x = (entity.position.x - topLeftCorner.x) * this.scale.x;
+            sprite.position.y = (entity.position.y - topLeftCorner.y) * this.scale.y;
         }
     }
 
