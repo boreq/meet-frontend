@@ -6,6 +6,7 @@ import { Component, Vue } from 'vue-property-decorator';
 export default class AppWebcam extends Vue {
 
     created(): void {
+        console.log(navigator.mediaDevices.getSupportedConstraints());
         try {
             const media = this.getMedia();
             media.then(mediaStream => {
@@ -29,10 +30,10 @@ export default class AppWebcam extends Vue {
             audio: true,
             video: {
                 width: {
-                    ideal: 200,
+                    exact: 200,
                 },
                 height: {
-                    ideal: 200,
+                    exact: 200,
                 },
             },
         };

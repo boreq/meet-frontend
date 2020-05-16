@@ -75,6 +75,7 @@ export class WebRTCCancer {
         if (!this.canNotAddIceCandidate()) {
             for (const iceCandidate of this.iceCandidates) {
                 try {
+                    console.log(iceCandidate);
                     await this.peerConnection.addIceCandidate(iceCandidate);
                 } catch (e) {
                     console.log('could not add ice candidate', e);
@@ -163,6 +164,7 @@ export class WebRTCCancer {
     }
 
     private decodeIceCandidate(candidate: string): RTCIceCandidate {
+        console.log('candidate', atob(candidate));
         return JSON.parse(atob(candidate));
     }
 

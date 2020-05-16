@@ -1,27 +1,5 @@
 .app-who-am-i {
 
-    $webcam-size: 200px;
-
-    .webcam {
-        width: $webcam-size;
-        height: $webcam-size;
-        background-color: $primary-color;
-        margin: 0 auto;
-        border-radius: $webcam-size;
-
-        overflow: hidden;
-        position: relative;
-        border: $border-width solid $primary-color;
-
-        .webcam {
-            position: absolute;
-            right: 0;
-            left: 0;
-            top: 0;
-            bottom: 0;
-        }
-    }
-
     .controls {
         display: flex;
         justify-content: center;

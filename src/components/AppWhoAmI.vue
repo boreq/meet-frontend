@@ -1,8 +1,6 @@
 <template>
     <div class="app-who-am-i">
-        <div class="webcam">
-            <app-webcam></app-webcam>
-        </div>
+        <app-webcam></app-webcam>
 
         <div class="controls">
             <app-round-button>

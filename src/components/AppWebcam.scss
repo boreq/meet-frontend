@@ -1,2 +1,30 @@
+$webcam-size: 200px;
+
 .app-webcam {
+    text-align: right;
+
+    video {
+        width: 200px;
+        height: 200px;
+    }
+
+    .wrapper {
+        width: $webcam-size;
+        height: $webcam-size;
+        background-color: $primary-color;
+        margin: 0 auto;
+        border-radius: $webcam-size;
+
+        overflow: hidden;
+        position: relative;
+        border: $border-width solid $primary-color;
+
+        video {
+            position: absolute;
+            right: 0;
+            left: 0;
+            top: 0;
+            bottom: 0;
+        }
+    }
 }
