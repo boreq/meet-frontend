@@ -12,6 +12,7 @@ import { ControlSystem } from '@/visualisation/systems/ControlSystem';
 import { Gopher } from '@/visualisation/entities/Gopher';
 import { Vector } from '@/visualisation/types/Vector';
 import { MovementSystem } from '@/visualisation/systems/MovementSystem';
+import { VideoRenderingSystem } from '@/visualisation/systems/VideoRenderingSystem';
 
 export class Visualisation {
 
@@ -80,6 +81,7 @@ export class Visualisation {
         this.world.addSystem(new ControlSystem(keyboard));
         this.world.addSystem(new ParticipantsSystem(this.world, this.participants));
         this.world.addSystem(new MovementSystem());
+        this.world.addSystem(new VideoRenderingSystem(this.app));
         this.world.addSystem(new RenderingSystem(this.app));
         this.world.setup();
 
@@ -96,7 +98,7 @@ export class Visualisation {
         return Object.values(Sprite);
     }
 
-    // For a bizzare (and surely stupid) reason delta is a coefficient equal to
+    // For a bizarre (and surely stupid) reason delta is a coefficient equal to
     // (60 / currentFPS). This function converts this coefficient to a much
     // more physically meaningful value representing the number of seconds
     // which have most likely passed since the last frame.

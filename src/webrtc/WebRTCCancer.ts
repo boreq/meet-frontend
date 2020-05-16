@@ -6,6 +6,7 @@ export class WebRTCCancer {
 
     private peerConnection: RTCPeerConnection;
     private makingOffer: boolean;
+    private iceCandidates: RTCIceCandidate[] = [];
 
     constructor(
         private localParticipantUUID: string,
@@ -38,6 +39,7 @@ export class WebRTCCancer {
 
             if (remoteSessionDescription.type === 'offer') {
                 await this.peerConnection.setRemoteDescription(remoteSessionDescription);
+                await this.tryAddIceCandidates();
                 const stream =
                     await navigator.mediaDevices.getUserMedia({video: true, audio: false});
                 stream.getTracks().forEach((track) =>
@@ -48,6 +50,7 @@ export class WebRTCCancer {
                 this.sendLocalSessionDescription(localSdp);
             } else if (remoteSessionDescription.type === 'answer') {
                 await this.peerConnection.setRemoteDescription(remoteSessionDescription);
+                await this.tryAddIceCandidates();
             } else {
                 console.warn('Unsupported SDP type.', remoteSessionDescription.type);
             }
@@ -58,7 +61,23 @@ export class WebRTCCancer {
 
     async onRemoteIceCandidate(s: string): Promise<void> {
         const iceCandidate = this.decodeIceCandidate(s);
+        if (!this.peerConnection || !this.peerConnection.remoteDescription.type) {
+            // for some reason ice candidates can be added only after remote
+            // description is present so we may have to put a candidate onto a
+            // queue
+            this.iceCandidates.push(iceCandidate);
+            return;
+        }
         return this.peerConnection.addIceCandidate(iceCandidate);
+    }
+
+    private async tryAddIceCandidates(): Promise<void> {
+        if (!this.peerConnection || !this.peerConnection.remoteDescription.type) {
+            for (const iceCandidate of this.iceCandidates) {
+                await this.peerConnection.addIceCandidate(iceCandidate);
+            }
+            this.iceCandidates = [];
+        }
     }
 
     private webrtcConnect(): void {

@@ -55,6 +55,9 @@ export class ParticipantsSystem implements System {
 
         // name
         entity.render.text.text = state.name;
+
+        // streams
+        entity.streams.stream = state.stream;
     }
 
     private getTargetSpeedValue(distance: number): number {
@@ -78,6 +81,9 @@ export class ParticipantsSystem implements System {
                 text: {
                     text: '',
                 },
+            },
+            streams: {
+                stream: null,
             },
         };
     }

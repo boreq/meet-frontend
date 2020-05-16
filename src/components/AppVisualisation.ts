@@ -7,10 +7,12 @@ import { VisualisationState } from '@/visualisation/VisualisationState';
 export class VisualisationParticipant {
     name: string;
     position: Vector;
+    stream: MediaStream;
 
-    constructor(name: string, state: VisualisationState) {
+    constructor(name: string, state: VisualisationState, stream: MediaStream) {
         this.name = name;
         this.position = state.position;
+        this.stream = stream;
     }
 }
 

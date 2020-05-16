@@ -1,6 +1,7 @@
 import { Component, Ref, Vue } from 'vue-property-decorator';
 import AppWebcam from '@/components/AppWebcam.vue';
 import AppVisualisation from '@/components/AppVisualisation.vue';
+import AppVisualisationComponent from '@/components/AppVisualisation';
 import { ApiService } from '@/services/ApiService';
 import { IncomingMessage, IncomingMessageType, OutgoingMessage } from '@/dto/Message';
 import {
@@ -40,7 +41,7 @@ export default class Meet extends Vue {
     private websocket: WebSocket;
 
     @Ref('visualisation')
-    readonly visualisation: AppVisualisation;
+    readonly visualisation: AppVisualisationComponent;
 
     private readonly api = new ApiService();
 
@@ -53,7 +54,6 @@ export default class Meet extends Vue {
             this.websocket.close();
         }
     }
-
 
     private connect(): void {
         this.websocket = this.api.joinMeeting('some-meeting');
@@ -86,7 +86,7 @@ export default class Meet extends Vue {
         const msg: IncomingMessage = JSON.parse(payload);
         const wrappedMsg: ReceivedMessage = JSON.parse(msg.payload);
 
-        console.log('received message', msg.messageType, wrappedMsg);
+        // console.log('received message', msg.messageType, wrappedMsg);
 
         switch (msg.messageType) {
             case IncomingMessageType.Hello:
@@ -129,16 +129,10 @@ export default class Meet extends Vue {
             },
             event => {
                 event.track.onunmute = () => {
-                    //if (remoteVideo.srcObject) {
-                    //    return;
-                    //}
-                    //remoteVideo.srcObject = event.streams[0];
-                    //remoteVideo.play();
-
-                    // var el = document.getElementById('video1');
-                    // el.srcObject = event.streams[0];
-                    // el.autoplay = true;
-                    // el.controls = true;
+                    console.log('onunmute', event.track, event.streams);
+                    if (event.track.kind === 'video') {
+                        this.onRemoteTrack(msg.participantUUID, event);
+                    }
                 };
             },
             constraints,
@@ -161,7 +155,7 @@ export default class Meet extends Vue {
     }
 
     private onVisualisationState(msg: VisualisationStateMessage): void {
-        this.participants.get(msg.participantUUID).state = this.decodeVisusalisationState(msg.state);
+        this.participants.get(msg.participantUUID).state = Meet.decodeVisualisationState(msg.state);
         this.visualisation.setParticipants(this.getVisualisationParticipants());
     }
 
@@ -181,7 +175,7 @@ export default class Meet extends Vue {
             payload: JSON.stringify(msg),
         };
 
-        console.log('sending message', outgoingMessage);
+        // console.log('sending message', outgoingMessage);
 
         this.websocket.send(JSON.stringify(outgoingMessage));
     }
@@ -190,14 +184,30 @@ export default class Meet extends Vue {
         // todo stop this
 
         if (this.visualisation) {
-            const state = this.encodeVisusalisationState(this.visualisation.getState());
+            const state = Meet.encodeVisualisationState(this.visualisation.getState());
             this.send(new UpdateVisualisationStateMessage(state));
         }
 
         window.setTimeout(() => this.sendVisualisationState(), 1000);
     }
 
-    private encodeVisusalisationState(state: VisualisationState): string {
+    private onRemoteTrack(participantUUID: string, event: RTCTrackEvent): void {
+        const participant = this.participants.get(participantUUID);
+        participant.stream = event.streams[0];
+    }
+
+
+    private getVisualisationParticipants(): Map<string, VisualisationParticipant> {
+        const v = new Map<string, VisualisationParticipant>();
+
+        for (const [key, value] of this.participants) {
+            v.set(key, new VisualisationParticipant(value.name, value.state, value.stream));
+        }
+
+        return v;
+    }
+
+    private static encodeVisualisationState(state: VisualisationState): string {
         const dto: VisualisationStateDto = {
             position: {
                 x: state.position.x,
@@ -207,21 +217,11 @@ export default class Meet extends Vue {
         return JSON.stringify(dto);
     }
 
-    private decodeVisusalisationState(state: string): VisualisationState {
+    private static decodeVisualisationState(state: string): VisualisationState {
         const dto: VisualisationStateDto = JSON.parse(state);
         return {
             position: new Vector(dto.position.x, dto.position.y),
         };
-    }
-
-    private getVisualisationParticipants(): Map<string, VisualisationParticipant> {
-        const v = new Map<string, VisualisationParticipant>();
-
-        for (const [key, value] of this.participants) {
-            v.set(key, new VisualisationParticipant(value.name, value.state));
-        }
-
-        return v;
     }
 
 }
