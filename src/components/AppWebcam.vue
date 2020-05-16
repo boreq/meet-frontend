@@ -1,7 +1,7 @@
 <template>
     <div class="app-webcam">
         <div class="wrapper">
-            <video></video>
+            <video :style="size"></video>
         </div>
     </div>
 </template>
