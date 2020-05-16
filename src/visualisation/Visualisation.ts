@@ -9,7 +9,7 @@ import { VisualisationParticipant } from '@/components/AppVisualisation';
 import { ParticipantsSystem } from '@/visualisation/systems/ParticipantsSystem';
 import { VisualisationState } from '@/visualisation/VisualisationState';
 import { ControlSystem } from '@/visualisation/systems/ControlSystem';
-import { Gopher } from '@/visualisation/entities/Gopher';
+import { Participant } from '@/visualisation/entities/Participant';
 import { Vector } from '@/visualisation/types/Vector';
 import { MovementSystem } from '@/visualisation/systems/MovementSystem';
 import { VideoRenderingSystem } from '@/visualisation/systems/VideoRenderingSystem';
@@ -20,7 +20,7 @@ export class Visualisation {
 
     private app: PIXI.Application;
     private world: World;
-    private gopher: Gopher = {
+    private participant: Participant = {
         position: new Vector(0, 0),
         speed: new Vector(0, 0),
         render: {
@@ -57,7 +57,7 @@ export class Visualisation {
 
     getState(): VisualisationState {
         return {
-            position: new Vector(this.gopher.position.x, this.gopher.position.y),
+            position: new Vector(this.participant.position.x, this.participant.position.y),
         };
     }
 
@@ -87,12 +87,12 @@ export class Visualisation {
         this.world.addSystem(new ControlSystem(keyboard));
         this.world.addSystem(new ParticipantsSystem(this.world, this.participants));
         this.world.addSystem(new MovementSystem());
-        this.world.addSystem(new CameraSystem(this.camera, this.gopher));
+        this.world.addSystem(new CameraSystem(this.camera, this.participant));
         this.world.addSystem(new VideoRenderingSystem(this.app, this.camera));
         this.world.addSystem(new RenderingSystem(this.app, this.camera));
         this.world.setup();
 
-        this.world.addEntity(this.gopher);
+        this.world.addEntity(this.participant);
         this.world.addEntity(this.camera);
 
         this.app.ticker.add(delta => this.update(this.asDT(delta)));

@@ -1,13 +1,13 @@
 import { System } from '@/visualisation/ecs/System';
 import { World } from '@/visualisation/ecs/World';
-import { Gopher } from '@/visualisation/entities/Gopher';
+import { Participant } from '@/visualisation/entities/Participant';
 import { Sprite } from '@/visualisation/Sprite';
 import { VisualisationParticipant } from '@/components/AppVisualisation';
 import { Vector } from '@/visualisation/types/Vector';
 
 export class ParticipantsSystem implements System {
 
-    private entities = new Map<string, Gopher>();
+    private entities = new Map<string, Participant>();
 
     constructor(private world: World, private participants: Map<string, VisualisationParticipant>) {
     }
@@ -45,7 +45,7 @@ export class ParticipantsSystem implements System {
     removeEntity(): void {
     }
 
-    private updateEntity(dt: number, entity: Gopher, state: VisualisationParticipant): void {
+    private updateEntity(dt: number, entity: Participant, state: VisualisationParticipant): void {
         // position
         const distance = entity.position.distance(state.position);
         const targetDirection = state.position.subtract(entity.position).normalise();
@@ -61,7 +61,7 @@ export class ParticipantsSystem implements System {
     }
 
     private getTargetSpeedValue(distance: number): number {
-         return this.min(1.2, distance * 0.8);
+        return this.min(1.2, distance * 0.8);
     }
 
     private min(a: number, b: number): number {
@@ -72,7 +72,7 @@ export class ParticipantsSystem implements System {
         }
     }
 
-    private newEntity(): Gopher {
+    private newEntity(): Participant {
         return {
             position: new Vector(0, 0),
             speed: new Vector(0, 0),

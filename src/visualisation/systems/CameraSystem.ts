@@ -1,10 +1,10 @@
 import { System } from '@/visualisation/ecs/System';
 import { Camera } from '@/visualisation/entities/Camera';
-import { Gopher } from '@/visualisation/entities/Gopher';
+import { Participant } from '@/visualisation/entities/Participant';
 
 export class CameraSystem implements System {
 
-    constructor(private camera: Camera, private participant: Gopher) {
+    constructor(private camera: Camera, private participant: Participant) {
     }
 
     setup(): void {
